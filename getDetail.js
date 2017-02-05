@@ -94,7 +94,7 @@ async.whilst(function (){
 	crawl(now.username,1,function (userdata){
 		if(db.list.find({
 			username: now.username
-		}).length==0){
+		}).length==0 && userdata.length>0){
 			db.list.save(userdata[0]);
 		}
 		count++;
