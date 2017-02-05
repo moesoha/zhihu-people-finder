@@ -29,8 +29,8 @@ if(fileout){
 				data[j]['numbers_'+i]=dataorigin[j].numbers[i];
 			}
 		}
-		data.topics_name=topicNamesArray.join(',');
-		data.topics_id=topicIdsArray.join(',');
+		data[j].topics_name=topicNamesArray.join(',');
+		data[j].topics_id=topicIdsArray.join(',');
 		delete data[j]._id;
 		delete data[j].topics;
 		delete data[j].numbers;
