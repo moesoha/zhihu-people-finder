@@ -1,0 +1,21 @@
+{
+  "name": "zhihu-senior-finder",
+  "version": "1.0.0",
+  "description": "Find senior students on zhihu.com",
+  "main": "orz.js",
+  "scripts": {
+    "test": "node orz.js"
+  },
+  "keywords": [
+    "crawler",
+    "zhihu"
+  ],
+  "author": "Soha King",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.1.4",
+    "cheerio": "^0.22.0",
+    "diskdb": "^0.1.17",
+    "request": "^2.79.0"
+  }
+}
