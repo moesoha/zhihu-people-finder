@@ -1,10 +1,10 @@
 {
-  "name": "zhihu-senior-finder",
+  "name": "zhihu-people-finder",
   "version": "1.0.0",
-  "description": "Find senior students on zhihu.com",
-  "main": "orz.js",
+  "description": "Find people on zhihu.com by keywords.",
+  "main": "grab.js",
   "scripts": {
-    "test": "node orz.js"
+    "run": "node grab.js && node getDetail.js"
   },
   "keywords": [
     "crawler",
