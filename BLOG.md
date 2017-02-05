@@ -32,6 +32,6 @@
 
 ### 0x05 其他的
 
-相关源码公布在GitHub：
+相关源码公布在GitHub：[sohaking/zhihu-people-finder](https://github.com/sohaking/zhihu-people-finder)
 
 知乎专栏：[https://zhuanlan.zhihu.com/p/25092211](https://zhuanlan.zhihu.com/p/25092211)
