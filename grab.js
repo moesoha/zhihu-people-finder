@@ -70,7 +70,7 @@ function extractInformation(theuser){
 		headline: theuser.headline ? theuser.headline.replace(new RegExp('<br>','g'),"\n") : theuser.headline,
 		gender: theuser.gender,
 		url: theuser.url,
-		avater: theuser.avatarUrl,
+		avatar: theuser.avatarUrl,
 		numbers: {
 			answers: parseInt(theuser.answerCount),
 			posts: parseInt(theuser.pinsCount),
