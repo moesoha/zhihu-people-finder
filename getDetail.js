@@ -1,6 +1,6 @@
 /*
-	Zhihu Senior Students Finder
-	grab.js - grab users by "Following"
+	Zhihu People Finder
+	getDetail.js - grab user detail info.
 
 	[Soha King](https://soha.moe) from
 		[Tianhai IT](http://tianhai.info)

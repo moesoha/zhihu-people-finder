@@ -1,5 +1,5 @@
 /*
-	Zhihu Senior Students Finder
+	Zhihu People Finder
 	grab.js - grab users by "Following"
 
 	[Soha King](https://soha.moe) from
