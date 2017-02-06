@@ -43,7 +43,7 @@ function crawlTopics(userid,cb){
 				}
 			}catch(err){
 				console.log(err);
-				console.log('Met error when processing \''+userid+'/'+suburi+'\'');
+				console.log('Met error when processing \''+userid+'\'');
 				if(cb){
 					cb([],0);
 				}
