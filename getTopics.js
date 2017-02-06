@@ -19,12 +19,16 @@ const baseUrl="https://www.zhihu.com";
 
 let db=diskdb.connect('./db',['listWithTopic','list']);
 
+process.on('uncaughtException',function (err){
+	console.log(err);
+});
+
 function crawlTopics(userid,cb){
 	request({
 		url: baseUrl+'/people/'+userid+'/following/topics',
 		headers: requestHeaders
 	},function (err,res,data){
-		if(res.statusCode==200){
+		if(res && res.statusCode==200){
 			let $=cheerio.load(data);
 			try{
 				let dataState=JSON.parse($('div#data').attr('data-state'));

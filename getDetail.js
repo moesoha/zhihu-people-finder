@@ -19,6 +19,10 @@ const baseUrl="https://www.zhihu.com";
 
 let db=diskdb.connect('./db',['list','queue']);
 
+process.on('uncaughtException',function (err){
+	console.log(err);
+});
+
 function extractInformation(theuser){
 	return({
 		username: theuser.urlToken,
@@ -65,7 +69,7 @@ function crawl(userid,page,cb){
 		url: baseUrl+'/people/'+userid+'/following'+'?page='+page,
 		headers: requestHeaders
 	},function (err,res,data){
-		if(res.statusCode==200){
+		if(res && res.statusCode==200){
 			let $=cheerio.load(data);
 			try{
 				let dataState=JSON.parse($('div#data').attr('data-state'));

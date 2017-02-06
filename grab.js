@@ -18,6 +18,10 @@ const requestHeaders={
 };
 const baseUrl="https://www.zhihu.com";
 
+process.on('uncaughtException',function (err){
+	console.log(err);
+});
+
 let db=diskdb.connect('./db',['judgeQueueNew','queue']);
 
 let startFrom=process.argv.slice(2)[0];
@@ -109,7 +113,7 @@ function crawl(userid,page,cb,f){
 		url: baseUrl+'/people/'+userid+'/'+suburi+'?page='+page,
 		headers: requestHeaders
 	},function (err,res,data){
-		if(res.statusCode==200){
+		if(res && res.statusCode==200){
 			let $=cheerio.load(data);
 			try{
 				let dataState=JSON.parse($('div#data').attr('data-state'));
@@ -247,7 +251,3 @@ async.whilst(function (){
 },function (err){
 	console.log(err);
 });
-
-process.on('uncaughtException',function (err){
-	console.log(err);
-})
