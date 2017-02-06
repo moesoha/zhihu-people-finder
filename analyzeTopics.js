@@ -1,13 +1,12 @@
 /*
 	Zhihu People Finder
-	exportCSV.js - export collection list to CSV
+	analyzeTopics.js - analyze collection list to CSV
 
 	[Soha King](https://soha.moe) from
 		[Tianhai IT](http://tianhai.info)
 */
 
 const diskdb=require('diskdb');
-const json2csv=require('json2csv');
 const fs=require('fs');
 let db=diskdb.connect('./db',['listWithTopic']);
 
@@ -15,8 +14,9 @@ const dataorigin=db.listWithTopic.find();
 let fileout=process.argv.splice(2)[0];
 let count233=0;
 let allTopics={
-	id: [],
-	name: []
+	id: {},
+	name: {},
+	data:{}
 };
 if(fileout){
 	var data=dataorigin;
@@ -28,12 +28,17 @@ if(fileout){
 				count233++;
 				topicIdsArray.push(dataorigin[j].topics[i].id);
 				topicNamesArray.push(dataorigin[j].topics[i].name);
-				if(allTopics.id.indexOf(dataorigin[j].topics[i].id)==(-1)){
-					allTopics.id.push(dataorigin[j].topics[i].id);
+				if(allTopics.id.hasOwnProperty(dataorigin[j].topics[i].id)){
+					allTopics.id[dataorigin[j].topics[i].id]++;
+				}else{
+					allTopics.id[dataorigin[j].topics[i].id]=1;
 				}
-				if(allTopics.name.indexOf(dataorigin[j].topics[i].name)==(-1)){
-					allTopics.name.push(dataorigin[j].topics[i].name);
+				if(allTopics.name.hasOwnProperty(dataorigin[j].topics[i].name)){
+					allTopics.name[dataorigin[j].topics[i].name]++;
+				}else{
+					allTopics.name[dataorigin[j].topics[i].name]=1;
 				}
+				allTopics.data[dataorigin[j].topics[i].id]=dataorigin[j].topics[i].name;
 			}
 		}
 		for(var i in dataorigin[j].numbers){
@@ -48,23 +53,16 @@ if(fileout){
 		delete data[j].numbers;
 	}
 	fields=[];
-	for(var i in data[0]){
-		if(data[0].hasOwnProperty(i)){
-			fields.push(i);
+	let outputData="";
+	for(var i in allTopics.id){
+		if(allTopics.id.hasOwnProperty(i)){
+			if(allTopics.id[i]>1){
+				outputData+=allTopics.data[i]+"\t"+allTopics.id[i]+"\r\n";
+			}
 		}
 	}
-	
-	try{
-		let result=json2csv({
-			data: data,
-			fields: fields
-		});
-		fs.writeFileSync(fileout,result);
-		console.log(count233+' times topic following.');
-		console.log(JSON.stringify(allTopics));
-	}catch(err){
-		console.error(err);
-	}
+	fs.writeFileSync(fileout,outputData);
+	console.log(JSON.stringify(allTopics));
 }else{
-	console.log('usage: node exportTopicsCSV.js <exportFilename>');
+	console.log('usage: node analyzeTopics.js <exportFilename>');
 }
