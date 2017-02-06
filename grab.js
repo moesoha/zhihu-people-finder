@@ -18,7 +18,7 @@ const requestHeaders={
 };
 const baseUrl="https://www.zhihu.com";
 
-let db=diskdb.connect('./db',['judgeQueueFollowing','judgeQueueFollower','queue']);
+let db=diskdb.connect('./db',['judgeQueueNew','queue']);
 
 let startFrom=process.argv.slice(2)[0];
 
@@ -128,23 +128,18 @@ function crawl(userid,page,cb,f){
 	});
 }
 
-if(db.judgeQueueFollowing.count()==0 && startFrom!=''){
-	db.judgeQueueFollowing.save({
+if(db.judgeQueueNew.count()==0 && startFrom!=''){
+	db.judgeQueueNew.save({
 		username: startFrom,
-		status: 0
-	});
-}
-if(db.judgeQueueFollower.count()==0 && startFrom!=''){
-	db.judgeQueueFollower.save({
-		username: startFrom,
-		status: 0
+		statusFollowing: 0,
+		statusFollower: 0
 	});
 }
 async.whilst(function (){
-	return(db.judgeQueueFollowing.count()!=0);
+	return(db.judgeQueueNew.count()!=0);
 },function (callback){
-	let a=db.judgeQueueFollowing.findOne({
-		status: 0
+	let a=db.judgeQueueNew.findOne({
+		statusFollowing: 0
 	});
 	if(a){
 		let currentSearch=a.username;
@@ -158,13 +153,14 @@ async.whilst(function (){
 					for(var i in data){
 						if(data.hasOwnProperty(i)){
 							if(judgeAndQueue(data[i],db.queue)){
-								if(db.judgeQueueFollowing.find({
+								if(db.judgeQueueNew.find({
 									username: data[i].username
 								}).length==0){
 									console.log("Following: "+data[i].username);
-									db.judgeQueueFollowing.save({
+									db.judgeQueueNew.save({
 										username: data[i].username,
-										status: 0
+										statusFollower: 0,
+										statusFollowing: 0
 									});
 								}
 							}
@@ -173,11 +169,12 @@ async.whilst(function (){
 					callback(null,currentPage);
 				},'following');
 			},function (err,n){
-				db.judgeQueueFollowing.update({
+				db.judgeQueueNew.update({
 					username: currentSearch
 				},{
 					username: currentSearch,
-					status: 1
+					statusFollowing: 1,
+					statusFollower: (db.judgeQueueNew.findOne({username: currentSearch})).statusFollower
 				},{
 					multi: true
 				});
@@ -191,10 +188,10 @@ async.whilst(function (){
 	console.log(err);
 });
 async.whilst(function (){
-	return(db.judgeQueueFollower.count()!=0);
+	return(db.judgeQueueNew.count()!=0);
 },function (callback){
-	let a=db.judgeQueueFollower.findOne({
-		status: 0
+	let a=db.judgeQueueNew.findOne({
+		statusFollower: 0
 	});
 	if(a){
 		let currentSearch=a.username;
@@ -208,13 +205,14 @@ async.whilst(function (){
 					for(var i in data){
 						if(data.hasOwnProperty(i)){
 							if(judgeAndQueue(data[i],db.queue)){
-								if(db.judgeQueueFollower.find({
+								if(db.judgeQueueNew.find({
 									username: data[i].username
 								}).length==0){
 									console.log("Followers: "+data[i].username);
-									db.judgeQueueFollower.save({
+									db.judgeQueueNew.save({
 										username: data[i].username,
-										status: 0
+										statusFollowing: 0,
+										statusFollower: 0
 									});
 								}
 							}
@@ -223,11 +221,12 @@ async.whilst(function (){
 					callback(null,currentPage);
 				},'followers');
 			},function (err,n){
-				db.judgeQueueFollower.update({
+				db.judgeQueueNew.update({
 					username: currentSearch
 				},{
 					username: currentSearch,
-					status: 1
+					statusFollower: 1,
+					statusFollowing: (db.judgeQueueNew.findOne({username: currentSearch})).statusFollowing
 				},{
 					multi: true
 				});
