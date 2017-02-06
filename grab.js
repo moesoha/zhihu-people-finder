@@ -221,7 +221,7 @@ async.whilst(function (){
 						}
 					}
 					callback(null,currentPage);
-				},'follower');
+				},'followers');
 			},function (err,n){
 				db.judgeQueueFollower.update({
 					username: currentSearch
@@ -233,7 +233,7 @@ async.whilst(function (){
 				});
 				callback(null);
 			});
-		},'follower');
+		},'followers');
 	}else{
 		callback('Follower network ended.');
 	}
