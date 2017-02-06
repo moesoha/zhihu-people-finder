@@ -161,7 +161,7 @@ async.whilst(function (){
 								if(db.judgeQueueFollowing.find({
 									username: data[i].username
 								}).length==0){
-									console.log(data[i].username);
+									console.log("Following: "+data[i].username);
 									db.judgeQueueFollowing.save({
 										username: data[i].username,
 										status: 0
@@ -211,7 +211,7 @@ async.whilst(function (){
 								if(db.judgeQueueFollower.find({
 									username: data[i].username
 								}).length==0){
-									console.log(data[i].username);
+									console.log("Followers: "+data[i].username);
 									db.judgeQueueFollower.save({
 										username: data[i].username,
 										status: 0
