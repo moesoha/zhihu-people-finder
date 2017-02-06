@@ -18,7 +18,7 @@ const requestHeaders={
 };
 const baseUrl="https://www.zhihu.com";
 
-let db=diskdb.connect('./db',['judgeQueue','queue']);
+let db=diskdb.connect('./db',['judgeQueueFollowing','judgeQueueFollower','queue']);
 
 let startFrom=process.argv.slice(2)[0];
 
@@ -103,9 +103,10 @@ function analyzeUserData(usersArray,thisuser){
 	return(retData);
 }
 
-function crawl(userid,page,cb){
+function crawl(userid,page,cb,f){
+	let suburi=f?f:'following';
 	request({
-		url: baseUrl+'/people/'+userid+'/following'+'?page='+page,
+		url: baseUrl+'/people/'+userid+'/'+suburi+'?page='+page,
 		headers: requestHeaders
 	},function (err,res,data){
 		if(res.statusCode==200){
@@ -127,16 +128,22 @@ function crawl(userid,page,cb){
 	});
 }
 
-if(db.judgeQueue.count()==0 && startFrom!=''){
-	db.judgeQueue.save({
+if(db.judgeQueueFollowing.count()==0 && startFrom!=''){
+	db.judgeQueueFollowing.save({
+		username: startFrom,
+		status: 0
+	});
+}
+if(db.judgeQueueFollower.count()==0 && startFrom!=''){
+	db.judgeQueueFollower.save({
 		username: startFrom,
 		status: 0
 	});
 }
 async.whilst(function (){
-	return(db.judgeQueue.count()!=0);
+	return(db.judgeQueueFollowing.count()!=0);
 },function (callback){
-	let a=db.judgeQueue.findOne({
+	let a=db.judgeQueueFollowing.findOne({
 		status: 0
 	});
 	if(a){
@@ -151,11 +158,11 @@ async.whilst(function (){
 					for(var i in data){
 						if(data.hasOwnProperty(i)){
 							if(judgeAndQueue(data[i],db.queue)){
-								if(db.judgeQueue.find({
+								if(db.judgeQueueFollowing.find({
 									username: data[i].username
 								}).length==0){
 									console.log(data[i].username);
-									db.judgeQueue.save({
+									db.judgeQueueFollowing.save({
 										username: data[i].username,
 										status: 0
 									});
@@ -164,9 +171,9 @@ async.whilst(function (){
 						}
 					}
 					callback(null,currentPage);
-				});
+				},'following');
 			},function (err,n){
-				db.judgeQueue.update({
+				db.judgeQueueFollowing.update({
 					username: currentSearch
 				},{
 					username: currentSearch,
@@ -176,9 +183,59 @@ async.whilst(function (){
 				});
 				callback(null);
 			});
-		});
+		},'following');
 	}else{
 		callback('Following network ended.');
+	}
+},function (err){
+	console.log(err);
+});
+async.whilst(function (){
+	return(db.judgeQueueFollower.count()!=0);
+},function (callback){
+	let a=db.judgeQueueFollower.findOne({
+		status: 0
+	});
+	if(a){
+		let currentSearch=a.username;
+		crawl(currentSearch,1,function (data,page){
+			var currentPage=0;
+			async.whilst(function (){
+				return(currentPage<page);
+			},function (callback){
+				currentPage++;
+				crawl(currentSearch,currentPage,function (data,page){
+					for(var i in data){
+						if(data.hasOwnProperty(i)){
+							if(judgeAndQueue(data[i],db.queue)){
+								if(db.judgeQueueFollower.find({
+									username: data[i].username
+								}).length==0){
+									console.log(data[i].username);
+									db.judgeQueueFollower.save({
+										username: data[i].username,
+										status: 0
+									});
+								}
+							}
+						}
+					}
+					callback(null,currentPage);
+				},'follower');
+			},function (err,n){
+				db.judgeQueueFollower.update({
+					username: currentSearch
+				},{
+					username: currentSearch,
+					status: 1
+				},{
+					multi: true
+				});
+				callback(null);
+			});
+		},'follower');
+	}else{
+		callback('Follower network ended.');
 	}
 },function (err){
 	console.log(err);
