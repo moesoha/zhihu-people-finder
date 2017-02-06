@@ -67,13 +67,21 @@ function crawl(userid,page,cb){
 	},function (err,res,data){
 		if(res.statusCode==200){
 			let $=cheerio.load(data);
-			let dataState=JSON.parse($('div#data').attr('data-state'));
-			let usersArray=dataState.entities.users;
-			let usersdata=analyzeUserData(usersArray,userid);
-			let pages=parseInt($('button.PaginationButton:not(.PaginationButton-next)').last().text());
-			pages=(pages>0) ? pages : 1;
-			if(cb){
-				cb(usersdata,pages);
+			try{
+				let dataState=JSON.parse($('div#data').attr('data-state'));
+				let usersArray=dataState.entities.users;
+				let usersdata=analyzeUserData(usersArray,userid);
+				let pages=parseInt($('button.PaginationButton:not(.PaginationButton-next)').last().text());
+				pages=(pages>0) ? pages : 1;
+				if(cb){
+					cb(usersdata,pages);
+				}
+			}catch(err){
+				console.log(err);
+				console.log('Met error when processing \''+userid+'/'+suburi+'\'');
+				if(cb){
+					cb([],0);
+				}
 			}
 		}else{
 			console.log('No user (banned or deleted): '+userid);

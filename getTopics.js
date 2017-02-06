@@ -26,19 +26,27 @@ function crawlTopics(userid,cb){
 	},function (err,res,data){
 		if(res.statusCode==200){
 			let $=cheerio.load(data);
-			let dataState=JSON.parse($('div#data').attr('data-state'));
-			let topicData=dataState.entities.topics;
-			let topics=[];
-			for(var i in topicData){
-				if(topicData.hasOwnProperty(i)){
-					topics.push({
-						id: topicData[i].id,
-						name: topicData[i].name
-					});
+			try{
+				let dataState=JSON.parse($('div#data').attr('data-state'));
+				let topicData=dataState.entities.topics;
+				let topics=[];
+				for(var i in topicData){
+					if(topicData.hasOwnProperty(i)){
+						topics.push({
+							id: topicData[i].id,
+							name: topicData[i].name
+						});
+					}
 				}
-			}
-			if(cb){
-				cb(topics);
+				if(cb){
+					cb(topics);
+				}
+			}catch(err){
+				console.log(err);
+				console.log('Met error when processing \''+userid+'/'+suburi+'\'');
+				if(cb){
+					cb([],0);
+				}
 			}
 		}else{
 			console.log('No user (banned or deleted): '+userid);
