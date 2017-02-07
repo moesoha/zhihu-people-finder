@@ -66,7 +66,7 @@ function analyzeUserData(usersArray,thisuser){
 
 function crawl(userid,page,cb){
 	request({
-		url: baseUrl+'/people/'+userid+'/following'+'?page='+page,
+		url: baseUrl+'/people/'+userid+'/activities',
 		headers: requestHeaders
 	},function (err,res,data){
 		if(res && res.statusCode==200){
